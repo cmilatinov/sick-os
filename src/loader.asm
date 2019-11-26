@@ -27,7 +27,8 @@ main:
 
 # Safety infinite loop
 stop: 
-	nop
+	cli
+	hlt
 	jmp stop
 
 # Kernel stack pointer definition

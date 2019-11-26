@@ -1,5 +1,7 @@
 #include "gtd.h"
 
+// SegmentDescriptor Class
+
 GDT::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t flags){
 
     // Byte pointer to segment descriptor.
@@ -71,22 +73,24 @@ uint32_t GDT::SegmentDescriptor::Limit(){
     return result;
 }
 
+// GDT Class
+
 GDT::GDT(): 
     null(0, 0, 0),
     unused(0, 0, 0),
     code(0, 64 * 1024 * 1024, 0b10011010),
     data(0, 64 * 1024 * 1024, 0b10010010){
 
-    // Lowest 16 bits of GDT size.
-    uint32_t value = sizeof(GDT) << 16;
+    // 16 Bit GDT size.
+    uint64_t value = (sizeof(GDT) - 1) << 48;
 
-    // 16 Bit pointer to the GDT.
-    value |= reinterpret_cast<uint32_t>(this);
+    // 32 Bit pointer to the GDT.
+    value |= reinterpret_cast<uint32_t>(this) << 16;
 
     // Load the GDT in assembly.
     asm volatile(
         "lgdt (%0)" : 
-        : "p"(value) );
+        : "p"(&value) );
 };
 
 GDT::~GDT(){};
